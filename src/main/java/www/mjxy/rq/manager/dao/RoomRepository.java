@@ -6,5 +6,5 @@ import www.mjxy.rq.manager.model.Room;
 /**
  * Created by wwhai on 2018/2/19.
  */
-public interface RoomRepository extends JpaRepository<Room,Integer> {
+public interface RoomRepository extends JpaRepository<Room,Long> {
 }
