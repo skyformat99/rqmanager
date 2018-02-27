@@ -136,4 +136,14 @@ public class ApplyService {
         return dataObject;
     }
 
+    public Apply getOneByAppUser(Long id, AppUser appUser) {
+
+        return applyRepository.findByIdAndAppUser(id, appUser);
+
+    }
+
+    public void deleteApply(Long id) {
+        applyRepository.delete(id);
+    }
+
 }

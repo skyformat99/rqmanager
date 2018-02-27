@@ -103,16 +103,18 @@ public class StudentController {
     @RequestMapping(value = "/applyRoom", method = RequestMethod.POST)
     public JSONObject applyRoom(@RequestBody JSONObject applyJsonBody) {
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        JSONObject jsonObject = new JSONObject();
+
         String reason = applyJsonBody.getString("reason");
         Long roomId = applyJsonBody.getLong("roomId");
         if (reason == null || roomId == null) {
-            JSONObject jsonObject = new JSONObject();
             jsonObject.put("state", 0);
             jsonObject.put("message", "请检查输入参数的完整性!");
             return jsonObject;
         }
 
         if (roomService.isRoomExists(roomId)) {
+            Room roomInfo = roomService.getByRoomId(roomId);
 
 
             /**
@@ -121,11 +123,18 @@ public class StudentController {
              * XX 用户 XXRoomId的记录
              */
             if (applyService.isAlreadyApplyRoom(roomService.getByRoomId(roomId), appUser)) {
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("state", 0);
                 jsonObject.put("message", "你已经申请过该教室了!请不要重复申请!");
                 return jsonObject;
+                /**
+                 * 这里处理  已经1被拒绝 或者 已经被申请过了
+                 */
+            } else if (roomInfo.getState() != 0) {
+                jsonObject.put("state", 0);
+                jsonObject.put("message", "该房间已经被别人申请!");
+                return jsonObject;
             } else {
+
                 Apply apply = new Apply();
                 apply.setAppUser(appUser);
                 apply.setReason(reason);
@@ -137,7 +146,6 @@ public class StudentController {
                 roomService.save(room);
                 applyService.createApply(apply);
 
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("state", 1);
                 jsonObject.put("message", "申请成功!请等待审核!");
                 return jsonObject;
@@ -145,7 +153,6 @@ public class StudentController {
 
 
         } else {
-            JSONObject jsonObject = new JSONObject();
             jsonObject.put("state", 0);
             jsonObject.put("message", "房间ID不存在!请检查输入参数!");
             return jsonObject;
@@ -153,6 +160,7 @@ public class StudentController {
 
 
     }
+
 
     /**
      * 查看我的申请记录
@@ -174,6 +182,40 @@ public class StudentController {
 
     }
 
+    /**
+     * 取消一次申请
+     *
+     * @param jsonBody
+     * @return
+     */
 
+    @RequestMapping(value = "/cancelApply", method = RequestMethod.POST)
+    public JSONObject cancelApply(@RequestBody JSONObject jsonBody) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        JSONObject jsonObject = new JSONObject();
 
+        Long applyId = jsonBody.getLongValue("applyId");
+        if (applyId == null || applyId.equals("")) {
+            jsonObject.put("state", 0);
+            jsonObject.put("message", "请输入有效参数!");
+        } else {
+            Apply apply = applyService.getOneByAppUser(applyId, appUser);
+            if (apply != null) {
+                Room room = apply.getRoom();
+                room.setState(0);
+                //还原房间的状态
+                roomService.save(room);
+                //删除申请记录
+                applyService.deleteApply(applyId);
+                jsonObject.put("state", 1);
+                jsonObject.put("message", "成功取消该申请!");
+            } else {
+                jsonObject.put("state", 0);
+                jsonObject.put("message", "该条目不存在!");
+            }
+
+        }
+
+        return jsonObject;
+    }
 }

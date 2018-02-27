@@ -9,12 +9,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import www.mjxy.rq.manager.configure.security.filter.CustomUsernamePasswordFilter;
 import www.mjxy.rq.manager.configure.security.handler.AnonymousHandler;
 import www.mjxy.rq.manager.configure.security.handler.LoginFailureHandler;
 import www.mjxy.rq.manager.configure.security.handler.LoginSuccessHandler;
 import www.mjxy.rq.manager.configure.security.handler.UserLogoutSuccessHandler;
 import www.mjxy.rq.manager.service.AppUserDetailService;
+import www.mjxy.rq.manager.utils.MD5Generator;
 
 /**
  * Created by wwhai on 2017/11/15.
@@ -53,9 +55,6 @@ public class SpringSecurityConfigure extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.addFilter(getCustomUsernamePasswordFilter());
-//        http.authorizeRequests()
-//                .antMatchers("/testHasRole")
-//                .access("hasRole('ADMIN')").anyRequest();
         http.authorizeRequests()
                 .antMatchers(securityRouter.getHttpSecurityRouter())
                 .permitAll();
@@ -77,18 +76,6 @@ public class SpringSecurityConfigure extends WebSecurityConfigurerAdapter {
     public Md5PasswordEncoder passwordEncoder() {
         return new Md5PasswordEncoder();
 
-    }
-
-    /**
-     * @param auth
-     * @throws Exception
-     */
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
-
-        auth.userDetailsService(customUserDetailsService());
     }
 
     /**
@@ -115,4 +102,29 @@ public class SpringSecurityConfigure extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
+
+    /**
+     * 密码认证过程
+     *
+     * @param auth
+     * @throws Exception
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailsService()).passwordEncoder(new PasswordEncoder() {
+
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return MD5Generator.EncodingMD5((String) rawPassword);
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return encodedPassword.equals(MD5Generator.EncodingMD5((String) rawPassword));
+            }
+        });
+    }
+
+
 }

@@ -16,4 +16,6 @@ public interface ApplyRepository extends JpaRepository<Apply, Long> {
     Page<Apply> findAllByAppUser(AppUser appUser, Pageable pageable);
 
     List<Apply> findAllByRoomAndAppUser(Room room, AppUser appUser);
+
+    Apply findByIdAndAppUser(Long applyId, AppUser appUser);
 }
