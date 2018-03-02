@@ -61,7 +61,6 @@ public class TeacherController {
 
     @RequestMapping(value = "/applies", method = RequestMethod.POST)
     public JSONObject applies(@RequestBody JSONObject pageJsonBody) {
-        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer pageNumber = pageJsonBody.getIntValue("pageNumber");
         Integer size = pageJsonBody.getIntValue("size");
 
