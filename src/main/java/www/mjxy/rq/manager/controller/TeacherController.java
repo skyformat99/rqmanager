@@ -75,9 +75,92 @@ public class TeacherController {
 
     }
 
+    /**
+     * 处理请求
+     *
+     * @param body
+     * @return
+     */
     @RequestMapping(value = "/processApply", method = RequestMethod.POST)
     public JSONObject processApply(@RequestBody JSONObject body) {
         return applyService.processApply(body);
 
     }
+
+    /**
+     * 删除一间教室
+     *
+     * @param body
+     * @return
+     */
+
+    @RequestMapping(value = "/deleteRoom", method = RequestMethod.POST)
+    public JSONObject deleteRoom(@RequestBody JSONObject body) {
+        JSONObject jsonObject = new JSONObject();
+        Long roomId = body.getLongValue("roomId");
+        Room room = roomService.getByRoomId(roomId);
+        if (room != null) {
+            /**
+             * 如果已经被申请 或者待处理状态的房间 不能删除
+             */
+            if (room.getState() == 0) {
+
+                roomService.deleteRoom(room);
+                jsonObject.put("state", 1);
+                jsonObject.put("message", "删除成功!");
+            } else if (room.getState() == 1 || room.getState() == 2) {
+                jsonObject.put("state", 0);
+                jsonObject.put("message", "正在使用中，不能删除!");
+            }
+
+        } else {
+            jsonObject.put("state", 0);
+            jsonObject.put("message", "教室不存在，删除失败!");
+        }
+        return jsonObject;
+
+    }
+
+
+    /**
+     * 更新教室
+     *
+     * @param roomJsonBody
+     * @return
+     */
+
+    @RequestMapping(value = "/updateRoom", method = RequestMethod.POST)
+    public JSONObject updateRoom(@RequestBody JSONObject roomJsonBody) {
+        JSONObject jsonObject = new JSONObject();
+        Long roomId = roomJsonBody.getLongValue("roomId");
+        String roomName = roomJsonBody.getString("roomName");
+        String roomNumber = roomJsonBody.getString("roomNumber");
+        String roomInfo = roomJsonBody.getString("roomInfo");
+        String location = roomJsonBody.getString("location");
+        if (roomInfo == null || roomName == null || roomNumber == null) {
+            jsonObject.put("state", 0);
+            jsonObject.put("message", "请输入有效的参数");
+            return jsonObject;
+        } else {
+            Room room = roomService.getByRoomId(roomId);
+            if (room != null) {
+                room.setRoomInfo(roomInfo);
+                room.setRoomName(roomName);
+                room.setRoomNumber(roomNumber);
+                room.setLocation(location);
+                roomService.save(room);
+                jsonObject.put("state", 1);
+                jsonObject.put("message", "更新成功!");
+                return jsonObject;
+            } else {
+                jsonObject.put("state", 0);
+                jsonObject.put("message", "教室不存在，删除失败!");
+                return jsonObject;
+            }
+
+        }
+
+    }
+
+
 }
