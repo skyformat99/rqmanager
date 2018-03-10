@@ -3,16 +3,17 @@ package www.mjxy.rq.manager.controller;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import www.mjxy.rq.manager.constants.FailureMessageEnum;
 import www.mjxy.rq.manager.constants.SuccessMessageEnum;
 import www.mjxy.rq.manager.model.AppUser;
 import www.mjxy.rq.manager.model.Room;
-import www.mjxy.rq.manager.service.ApplyService;
-import www.mjxy.rq.manager.service.RoomService;
+import www.mjxy.rq.manager.model.UserRole;
+import www.mjxy.rq.manager.service.*;
+import www.mjxy.rq.manager.utils.MD5Generator;
 
 /**
  * Created by wwhai on 2018/2/23.
@@ -25,6 +26,14 @@ public class TeacherController {
     ApplyService applyService;
     @Autowired
     RoomService roomService;
+
+    @Autowired
+    AppUserService appUserService;
+    @Autowired
+    UserRoleService userRoleService;
+
+    @Autowired
+    DepartmentService departmentService;
 
     /**
      * 增加一间教室
@@ -161,5 +170,70 @@ public class TeacherController {
 
     }
 
+    /**
+     * 管理员增加一个用户
+     *
+     * @param loginParamMap
+     * @return
+     */
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    public JSONObject addUser(@RequestBody JSONObject loginParamMap) {
+        JSONObject resultJson = new JSONObject();
+        /**
+         * Map 提取参数的时候可能会抛出异常，所以进行异常捕获
+         */
+
+
+        String username = loginParamMap.getString("username");
+        //String password = loginParamMap.getString("password");
+        String email = loginParamMap.getString("email");
+        String phone = loginParamMap.getString("phone");
+        String schoolCode = loginParamMap.getString("schoolCode");
+        String trueName = loginParamMap.getString("trueName");
+        String department = loginParamMap.getString("department");
+
+
+        /**
+         * 排除非空
+         */
+        if (schoolCode.equals("") || department.equals("") || username.equals("") || trueName.equals("") || email.equals("") || phone.equals("")) {
+            resultJson.put("state", 0);
+            resultJson.put("message", FailureMessageEnum.INVALID_PARAM);
+            return resultJson;
+        } else {
+            /**
+             *  判断用户是否存在
+             */
+
+            if (appUserService.isUsernameExist(username)) {
+                resultJson.put("state", 0);
+                resultJson.put("message", FailureMessageEnum.USER_ALREADY_EXIST.getMessage());
+
+                /**
+                 * 所有的非法条件过滤以后，进行增加用户
+                 */
+            } else {
+                AppUser appUser = new AppUser();
+                //系统自己生成密码
+                appUser.setUsername(username);
+                appUser.setPassword(MD5Generator.EncodingMD5("66666666"));
+                appUser.setPhone(phone);
+                appUser.setEmail(email);
+                appUser.setSchoolCode(schoolCode);
+                appUser.setTrueName(trueName);
+                appUser.setDepartment(department);
+                appUserService.createUser(appUser);
+                UserRole userRole = new UserRole();
+                userRole.setAppUser(appUser);
+                userRole.setRole("ROLE_USER");
+                //默认为USER角色
+                userRoleService.createUserRole(userRole);
+                resultJson.put("state", 1);
+                resultJson.put("message", "添加用户成功!");
+            }
+
+        }
+        return resultJson;
+    }
 
 }

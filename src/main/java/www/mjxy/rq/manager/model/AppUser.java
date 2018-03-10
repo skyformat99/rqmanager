@@ -28,6 +28,9 @@ public class AppUser extends BaseEntity implements UserDetails,Serializable {
     private String schoolCode;
     private String email;
     private String phone;
+    private String trueName;//真实姓名
+
+    private String department;//院系
     private String avatar = "/avatar/avatar" + new Random().nextInt(51) + ".png";
     private boolean isAccountNonExpired = true;
     private boolean isAccountNonLocked = true;
@@ -41,6 +44,22 @@ public class AppUser extends BaseEntity implements UserDetails,Serializable {
 
     public List<UserRole> getRoleList() {
         return roleList;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public String getTrueName() {
+        return trueName;
+    }
+
+    public void setTrueName(String trueName) {
+        this.trueName = trueName;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public void setRoleList(List roleList) {

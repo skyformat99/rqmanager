@@ -6,7 +6,9 @@ import www.mjxy.rq.manager.model.AppUser;
 /**
  * Created by wwhai on 2018/2/19.
  */
-public interface AppUserRepository extends JpaRepository<AppUser,Long>{
-    AppUser findTopByUsernameOrSchoolCode(String username,String schoolCode);
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
+    AppUser findTopByUsernameOrSchoolCode(String username, String schoolCode);
+
+    AppUser findTopByUsername(String username);
 
 }

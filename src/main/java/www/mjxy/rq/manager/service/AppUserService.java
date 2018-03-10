@@ -42,7 +42,10 @@ public class AppUserService {
         return appUser;
     }
 
+    public boolean isUsernameExist(String username) {
+        return appUserRepository.findTopByUsername(username) == null ? false : true;
 
+    }
 
 
     public AppUser updateUser(AppUser appUser) {

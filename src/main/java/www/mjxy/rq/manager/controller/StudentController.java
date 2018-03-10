@@ -19,6 +19,9 @@ import www.mjxy.rq.manager.service.RoomService;
 import www.mjxy.rq.manager.service.UserRoleService;
 import www.mjxy.rq.manager.utils.MD5Generator;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by wwhai on 2018/2/23.
  */
@@ -42,59 +45,7 @@ public class StudentController {
      * @return
      */
 
-    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
-    public JSONObject addUser(@RequestBody(required = false) JSONObject loginParamMap) {
-        JSONObject resultJson = new JSONObject();
-        /**
-         * Map 提取参数的时候可能会抛出异常，所以进行异常捕获
-         */
 
-
-        String username = loginParamMap.getString("username");
-        String password = loginParamMap.getString("password");
-        String email = loginParamMap.getString("email");
-        String phone = loginParamMap.getString("phone");
-        String schoolCode = loginParamMap.getString("schoolCode");
-
-        /**
-         * 排除非空
-         */
-        if (username.equals("") || password.equals("") || email.equals("") || phone.equals("")) {
-            resultJson.put("state", 0);
-            resultJson.put("message", FailureMessageEnum.INVALID_PARAM);
-            return resultJson;
-        } else {
-            /**
-             *  判断用户是否存在
-             */
-
-            if (appUserService.isUserExistsByParameter(username, schoolCode)) {
-                resultJson.put("state", 0);
-                resultJson.put("message", FailureMessageEnum.USER_ALREADY_EXIST.getMessage());
-
-                /**
-                 * 所有的非法条件过滤以后，进行增加用户
-                 */
-            } else {
-                AppUser appUser = new AppUser();
-                appUser.setUsername(username);
-                appUser.setPassword(MD5Generator.EncodingMD5(password));
-                appUser.setPhone(phone);
-                appUser.setEmail(email);
-                appUser.setSchoolCode(schoolCode);
-                appUserService.createUser(appUser);
-                UserRole userRole = new UserRole();
-                userRole.setAppUser(appUser);
-                userRole.setRole("ROLE_USER");
-                //默认为USER角色
-                userRoleService.createUserRole(userRole);
-                resultJson.put("state", 1);
-                resultJson.put("message", SuccessMessageEnum.REGISTER_SUCCESS);
-            }
-
-        }
-        return resultJson;
-    }
 
     /**
      * 下面是申请 查看等操作
@@ -107,6 +58,23 @@ public class StudentController {
 
         String reason = applyJsonBody.getString("reason");
         Long roomId = applyJsonBody.getLong("roomId");
+        /**
+         * timeType
+         */
+        int timeType = applyJsonBody.getIntValue("timeType");
+        Date startTime;
+        Date endTime;
+        try {
+            startTime = new SimpleDateFormat("yyyy-MM-dd-HH").parse(applyJsonBody.getString("startTime"));
+            endTime = new SimpleDateFormat("yyyy-MM-dd-HH").parse(applyJsonBody.getString("endTime"));
+        } catch (Exception e) {
+            jsonObject.put("state", 0);
+            jsonObject.put("message", "时间格式错误!应该是yyyy-MM-dd-HH,比如:2018-3-8-12");
+            return jsonObject;
+
+        }
+
+
         if (reason == null || roomId == null) {
             jsonObject.put("state", 0);
             jsonObject.put("message", "请检查输入参数的完整性!");
@@ -134,18 +102,47 @@ public class StudentController {
                 jsonObject.put("message", "该房间已经被别人申请!");
                 return jsonObject;
             } else {
+                /**
+                 * 开始处理时间
+                 */
+
+                switch (timeType) {
+                    case 1://早上8-12点
+                        /**
+                         * 这里的逻辑简单描述一下
+                         * 这条申请书的时间 就改为 xxxx年xxx月xxx天xxx时间段
+                         *
+                         */
+
+
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        break;
+                }
+
 
                 Apply apply = new Apply();
+                apply.setStartTime(startTime);
+                apply.setEndTime(endTime);
                 apply.setAppUser(appUser);
                 apply.setReason(reason);
                 Room room = roomService.getByRoomId(roomId);
+                //1 修改room的状态:别人正在待定
                 room.setState(1);
                 apply.setRoom(room);
-                //1 修改room的状态
-                //2 修改apply的状态
+                //2 修改apply的状态:待定
+                apply.setState(1);
                 roomService.save(room);
                 applyService.createApply(apply);
-
+                System.out.println("院系:[" + appUser.getDepartment() + "]"
+                        + "负责人:[" + appUser.getTrueName() + "]"
+                        + "在时间段:[" + startTime + "-" + endTime + "]"
+                        + "申请教室:[" + room.getRoomName()
+                        + "]此时状态:" + apply.getState() + "]");
                 jsonObject.put("state", 1);
                 jsonObject.put("message", "申请成功!请等待审核!");
                 return jsonObject;
