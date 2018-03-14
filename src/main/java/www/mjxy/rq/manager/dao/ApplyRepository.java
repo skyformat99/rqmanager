@@ -25,5 +25,5 @@ public interface ApplyRepository extends JpaRepository<Apply, Long> {
     List<AppUser> findAllByAppUser(AppUser appUser);
 
 
-    Apply findTopByAppUserAndRoomAndApplyDateBetweenStartAndEnd(AppUser appUser, Room room, Date start, Date end);
+    Apply findTopByApplyDateBetween( Date start, Date end);
 }

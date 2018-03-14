@@ -14,6 +14,4 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     AppUser findTopByUsername(String username);
 
-    List<AppUser> findAllByApplyList(List<Apply> applies);
-
 }

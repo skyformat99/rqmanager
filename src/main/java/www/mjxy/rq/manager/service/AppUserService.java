@@ -18,10 +18,6 @@ public class AppUserService {
     @Autowired
     UserRoleService userRoleService;
 
-    public boolean isUserExistsByParameter(String username, String schoolCode) {
-
-        return (appUserRepository.findTopByUsernameOrSchoolCode(username, schoolCode) == null) ? false : true;
-    }
 
 
     public AppUser getUserByParameter(String username, String schoolCode) {

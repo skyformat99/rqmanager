@@ -117,7 +117,7 @@ public class StudentController {
             System.out.println("开始时间:" + startDate);
             System.out.println("结束时间:" + endDate);
 
-            if (applyService.isRoomAtFreeStateInThisDate(appUser, room, startDate, endDate)) {
+            if (applyService.isRoomAtFreeStateInThisDate(startDate, endDate)) {
                 returnJson.put("state", 0);
                 returnJson.put("message", "已经被占用！请等待其他时刻!");
                 return returnJson;
@@ -127,6 +127,8 @@ public class StudentController {
             apply.setAppUser(appUser);
             apply.setRoom(room);
             apply.setReason(reason);
+            //设置申请时间
+            //时间+申请类型 = 完整日期
             try {
                 apply.setApplyDate(new SimpleDateFormat("yyyy-MM-dd").parse(applyDateString));
             } catch (Exception e) {

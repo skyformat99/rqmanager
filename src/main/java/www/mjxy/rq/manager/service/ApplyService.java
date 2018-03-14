@@ -51,9 +51,9 @@ public class ApplyService {
 
     }
 
-    public Boolean isRoomAtFreeStateInThisDate(AppUser appUser, Room room, Date start, Date end) {
+    public Boolean isRoomAtFreeStateInThisDate(Date start, Date end) {
 
-        return applyRepository.findTopByAppUserAndRoomAndApplyDateBetweenStartAndEnd(appUser, room, start, end) != null ? true : false;
+        return applyRepository.findTopByApplyDateBetween(start, end) != null ? true : false;
 
     }
 

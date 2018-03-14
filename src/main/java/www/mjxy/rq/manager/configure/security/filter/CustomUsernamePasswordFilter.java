@@ -48,7 +48,7 @@ public class CustomUsernamePasswordFilter extends UsernamePasswordAuthentication
         Authentication authentication = null;
 
         if (true && !request.getMethod().equals("POST")) {
-            throw new AuthenticationServiceException("Authentic method not supported: " + request.getMethod());
+            throw new AuthenticationServiceException("Only support post!");
         } else {
 
             try {
@@ -58,7 +58,6 @@ public class CustomUsernamePasswordFilter extends UsernamePasswordAuthentication
 
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println(e.getClass());
                 logger.error("登录失败" + e.getMessage());
                 JSONObject resultJson = new JSONObject();
                 resultJson.put("state", 0);

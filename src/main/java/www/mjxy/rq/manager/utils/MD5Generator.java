@@ -13,7 +13,7 @@ public class MD5Generator {
 
     private static final String SALT = "this_is_salt";
 
-    public static String encode(String password) {
+    public static String EncodingMD5WithSalt(String password) {
         password = password + SALT;
         MessageDigest md5 = null;
         try {
@@ -66,5 +66,9 @@ public class MD5Generator {
 
     }
 
+//    public static void main(String[] args) {
+//        System.out.println(EncodingMD5WithSalt("password"));
+//        System.out.println(EncodingMD5("password"));
+//    }
 
 }
