@@ -108,18 +108,7 @@ public class TeacherController {
         Long roomId = body.getLongValue("roomId");
         Room room = roomService.getByRoomId(roomId);
         if (room != null) {
-            /**
-             * 如果已经被申请 或者待处理状态的房间 不能删除
-             */
-            if (room.getState() == 0) {
 
-                roomService.deleteRoom(room);
-                jsonObject.put("state", 1);
-                jsonObject.put("message", "删除成功!");
-            } else if (room.getState() == 1 || room.getState() == 2) {
-                jsonObject.put("state", 0);
-                jsonObject.put("message", "正在使用中，不能删除!");
-            }
 
         } else {
             jsonObject.put("state", 0);

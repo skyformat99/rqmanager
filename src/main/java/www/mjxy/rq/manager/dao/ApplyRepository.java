@@ -7,6 +7,7 @@ import www.mjxy.rq.manager.model.AppUser;
 import www.mjxy.rq.manager.model.Apply;
 import www.mjxy.rq.manager.model.Room;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,4 +19,11 @@ public interface ApplyRepository extends JpaRepository<Apply, Long> {
     List<Apply> findAllByRoomAndAppUser(Room room, AppUser appUser);
 
     Apply findByIdAndAppUser(Long applyId, AppUser appUser);
+
+    List<Apply> findAllByRoom(Room room);
+
+    List<AppUser> findAllByAppUser(AppUser appUser);
+
+
+    Apply findTopByAppUserAndRoomAndApplyDateBetweenStartAndEnd(AppUser appUser, Room room, Date start, Date end);
 }

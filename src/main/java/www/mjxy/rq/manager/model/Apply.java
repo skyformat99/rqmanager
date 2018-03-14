@@ -1,9 +1,9 @@
 package www.mjxy.rq.manager.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import www.mjxy.rq.manager.constants.ApplyState;
+import www.mjxy.rq.manager.constants.TimeType;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -28,10 +28,8 @@ public class Apply extends BaseEntity implements Serializable {
     private Room room;
     private String reason;
     //0 1 2
-    private int state = 1;
-
-
-
+    @Enumerated(value = EnumType.STRING)
+    private ApplyState state = ApplyState.PENDING;
     /*
     申请的时间段
     1 8-12
@@ -43,25 +41,43 @@ public class Apply extends BaseEntity implements Serializable {
     数学系工号为[SXX100000]的小明在2018年3月8日提交了一份申请，申请的内容是：
     想要在时间段[1]{8-12点}用116教室开年级大会，望批准,这个申请书此时在等待审批的状态;
      */
+    @Enumerated(value = EnumType.STRING)
+    private TimeType timeType;
 
-    private Date startTime;
-    private Date endTime;
+    private Date applyDate;//申请时间
+    private Date start;
+    private Date end;
 
-
-    public Date getStartTime() {
-        return startTime;
+    public Date getStart() {
+        return start;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setStart(Date start) {
+        this.start = start;
     }
 
-    public Date getEndTime() {
-        return endTime;
+    public Date getEnd() {
+        return end;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setEnd(Date end) {
+        this.end = end;
+    }
+
+    public TimeType getTimeType() {
+        return timeType;
+    }
+
+    public void setTimeType(TimeType timeType) {
+        this.timeType = timeType;
+    }
+
+    public Date getApplyDate() {
+        return applyDate;
+    }
+
+    public void setApplyDate(Date applyDate) {
+        this.applyDate = applyDate;
     }
 
     public AppUser getAppUser() {
@@ -88,11 +104,11 @@ public class Apply extends BaseEntity implements Serializable {
         this.reason = reason;
     }
 
-    public int getState() {
+    public ApplyState getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(ApplyState state) {
         this.state = state;
     }
 }

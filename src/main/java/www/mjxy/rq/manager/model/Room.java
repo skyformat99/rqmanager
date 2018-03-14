@@ -1,7 +1,11 @@
 package www.mjxy.rq.manager.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by wwhai on 2018/2/19.
@@ -9,15 +13,12 @@ import java.io.Serializable;
  * 门牌号
  */
 @Entity
-public class Room extends BaseEntity implements Serializable{
+public class Room extends BaseEntity implements Serializable {
     private String roomName;
     private String roomNumber;
     private String roomInfo;
     private String location;
-    //0 空闲
-    //1 审核中
-    //2 已经被申请
-    private Integer state=0;
+
 
     public String getRoomName() {
         return roomName;
@@ -41,14 +42,6 @@ public class Room extends BaseEntity implements Serializable{
 
     public void setRoomInfo(String roomInfo) {
         this.roomInfo = roomInfo;
-    }
-
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
     }
 
     public String getLocation() {

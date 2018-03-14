@@ -20,7 +20,7 @@ import java.util.Random;
  * Created by wwhai on 2018/2/19.
  */
 @Entity
-public class AppUser extends BaseEntity implements UserDetails,Serializable {
+public class AppUser extends BaseEntity implements UserDetails, Serializable {
 
     private String username;
     @JsonIgnore
@@ -36,6 +36,13 @@ public class AppUser extends BaseEntity implements UserDetails,Serializable {
     private boolean isAccountNonLocked = true;
     private boolean isCredentialsNonExpired = true;
     private boolean isEnabled = true;
+
+
+    @JSONField(serialize = false)
+    @JsonIgnore
+    @OneToMany(targetEntity = Apply.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Apply> applyList;
+
 
     @JSONField(serialize = false)
     @JsonIgnore

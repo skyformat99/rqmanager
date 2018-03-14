@@ -7,11 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import www.mjxy.rq.manager.constants.ApplyState;
 import www.mjxy.rq.manager.dao.ApplyRepository;
 import www.mjxy.rq.manager.model.AppUser;
 import www.mjxy.rq.manager.model.Apply;
 import www.mjxy.rq.manager.model.Room;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,6 +48,12 @@ public class ApplyService {
         List<Apply> applyList = applyRepository.findAllByRoomAndAppUser(room, appUser);
 
         return applyList != null && applyList.size() != 0 ? true : false;
+
+    }
+
+    public Boolean isRoomAtFreeStateInThisDate(AppUser appUser, Room room, Date start, Date end) {
+
+        return applyRepository.findTopByAppUserAndRoomAndApplyDateBetweenStartAndEnd(appUser, room, start, end) != null ? true : false;
 
     }
 
@@ -95,10 +103,8 @@ public class ApplyService {
 
                 if (apply != null) {
                     //通过
-                    apply.setState(2);
+                    apply.setState(ApplyState.ACCESS);
                     Room room = apply.getRoom();
-                    //同时 房间标识为：已经借出
-                    room.setState(2);
                     roomService.save(room);
                     applyRepository.save(apply);
                     dataObject.put("state", 1);
@@ -114,10 +120,8 @@ public class ApplyService {
                 //state更新为 0 拒绝
                 if (apply != null) {
                     //拒绝
-                    apply.setState(0);
+                    apply.setState(ApplyState.DENY);
                     Room room = apply.getRoom();
-                    //同时 房间标识为：可以借0
-                    room.setState(0);
                     roomService.save(room);
                     applyRepository.save(apply);
                     dataObject.put("state", 1);
