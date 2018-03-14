@@ -68,6 +68,7 @@ public class ApplyService {
         jsonObject.put("totalPage", applyPage.getTotalPages());
         return jsonObject;
 
+
     }
 
     public JSONArray loopList(List<Apply> list) {
