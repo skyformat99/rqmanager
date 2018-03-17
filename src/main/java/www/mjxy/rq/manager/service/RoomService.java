@@ -11,6 +11,7 @@ import www.mjxy.rq.manager.dao.AppUserRepository;
 import www.mjxy.rq.manager.dao.ApplyRepository;
 import www.mjxy.rq.manager.dao.RoomRepository;
 import www.mjxy.rq.manager.model.Apply;
+import www.mjxy.rq.manager.model.ApplyRecord;
 import www.mjxy.rq.manager.model.Room;
 
 import java.util.List;
@@ -26,8 +27,9 @@ public class RoomService {
     AppUserRepository appUserRepository;
     @Autowired
     ApplyRepository applyRepository;
+
     @Autowired
-    DepartmentService departmentService;
+    ApplyRecordService applyRecordService;
 
     public Room createRoom(Room room) {
         return roomRepository.save(room);
@@ -49,13 +51,11 @@ public class RoomService {
         return roomRepository.findOne(roomId);
     }
 
-    public JSONObject getAllRooms(Integer pageNumber, Integer size) {
-        PageRequest pageRequest = new PageRequest(pageNumber, size, new Sort(Sort.Direction.DESC, "id"));
-        Page<Room> applyPage = roomRepository.findAll(pageRequest);
-
+    public JSONObject getAllRooms() {
+        List<Room> applyPage = roomRepository.findAll();
 
         JSONArray jsonArray = new JSONArray();
-        for (Room room : applyPage.getContent()) {
+        for (Room room : applyPage) {
             JSONObject dataObject = new JSONObject();
             dataObject.put("id", room.getId());
             dataObject.put("roomName", room.getRoomName());
@@ -63,43 +63,29 @@ public class RoomService {
             dataObject.put("location", room.getLocation());
             dataObject.put("roomInfo", room.getRoomInfo());
             dataObject.put("createTime", room.getCreateTime());
-
             jsonArray.add(dataObject);
         }
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", jsonArray);
-        jsonObject.put("page", pageNumber);
-        jsonObject.put("isLast", applyPage.isLast());
-        jsonObject.put("isFirst", applyPage.isFirst());
-        jsonObject.put("totalPage", applyPage.getTotalPages());
         return jsonObject;
 
     }
 
 
-    public JSONObject getAllRoomsInfo(Integer pageNumber, Integer size) {
-        PageRequest pageRequest = new PageRequest(pageNumber, size, new Sort(Sort.Direction.DESC, "id"));
-        Page<Room> applyPage = roomRepository.findAll(pageRequest);
-        JSONObject dataJson = new JSONObject();
-        JSONArray dataArray = new JSONArray();
-
-        for (Room room : applyPage.getContent()) {
-            JSONObject roomInfo = new JSONObject();
-            List<Apply> applyList = applyRepository.findAllByRoom(room);
-            for (Apply apply : applyList) {
-                JSONObject userInfo = new JSONObject();
-                userInfo.put("username", apply.getAppUser().getUsername());
-                userInfo.put("schoolCode", apply.getAppUser().getSchoolCode());
-                userInfo.put("trueName", apply.getAppUser().getTrueName());
-                roomInfo.put("userInfo", userInfo);
-
-            }
-            dataArray.add(roomInfo);
-
+    /**
+     * 获取房间的申请日历
+     *
+     * @param roomId
+     * @return
+     */
+    public JSONArray getRoomInfo(Long roomId) {
+        Room room = roomRepository.findOne(roomId);
+        if (room != null) {
+            return applyRecordService.getRecordByRoom(room);
+        } else {
+            return null;
         }
-        dataJson.put("data", dataArray);
-        return dataJson;
     }
 
 }

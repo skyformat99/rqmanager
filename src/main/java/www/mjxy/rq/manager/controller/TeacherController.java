@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import www.mjxy.rq.manager.constants.FailureMessageEnum;
-import www.mjxy.rq.manager.constants.SuccessMessageEnum;
 import www.mjxy.rq.manager.model.AppUser;
 import www.mjxy.rq.manager.model.Room;
 import www.mjxy.rq.manager.model.UserRole;
@@ -61,7 +60,7 @@ public class TeacherController {
             roomService.createRoom(room);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("state", 1);
-            jsonObject.put("message", SuccessMessageEnum.OPERATE_SUCCESS.getMessage());
+            jsonObject.put("message", "添加成功!");
 
             return jsonObject;
 

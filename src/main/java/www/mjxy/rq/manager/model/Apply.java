@@ -1,9 +1,6 @@
 package www.mjxy.rq.manager.model;
 
-import www.mjxy.rq.manager.constants.ApplyState;
-import www.mjxy.rq.manager.constants.TimeType;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,54 +19,21 @@ import java.util.Date;
  */
 @Entity
 public class Apply extends BaseEntity implements Serializable {
-    @ManyToOne(targetEntity = AppUser.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private AppUser appUser;
-    @ManyToOne(targetEntity = Room.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Room room;
-    private String reason;
-    //0 1 2
-    @Enumerated(value = EnumType.STRING)
-    private ApplyState state = ApplyState.PENDING;
-    /*
-    申请的时间段
-    1 8-12
-    2 12-14
-    3 14-16
-    4 16-21
+    //    @ManyToOne(targetEntity = AppUser.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private AppUser appUser;
+//    @ManyToOne(targetEntity = Room.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private Room room;
+//    private String reason;
+    private Date applyDate;
 
-    产生的数据格式:
-    数学系工号为[SXX100000]的小明在2018年3月8日提交了一份申请，申请的内容是：
-    想要在时间段[1]{8-12点}用116教室开年级大会，望批准,这个申请书此时在等待审批的状态;
-     */
-    @Enumerated(value = EnumType.STRING)
-    private TimeType timeType;
+    private String stateArray;
 
-    private Date applyDate;//申请时间
-    private Date startDate;
-    private Date endDate;
-
-    public Date getStartDate() {
-        return startDate;
+    public String getStateArray() {
+        return stateArray;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public TimeType getTimeType() {
-        return timeType;
-    }
-
-    public void setTimeType(TimeType timeType) {
-        this.timeType = timeType;
+    public void setStateArray(String stateArray) {
+        this.stateArray = stateArray;
     }
 
     public Date getApplyDate() {
@@ -79,36 +43,6 @@ public class Apply extends BaseEntity implements Serializable {
     public void setApplyDate(Date applyDate) {
         this.applyDate = applyDate;
     }
+//
 
-    public AppUser getAppUser() {
-        return appUser;
-    }
-
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public ApplyState getState() {
-        return state;
-    }
-
-    public void setState(ApplyState state) {
-        this.state = state;
-    }
 }

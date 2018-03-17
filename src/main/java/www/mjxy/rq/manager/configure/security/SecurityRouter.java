@@ -16,6 +16,7 @@ public class SecurityRouter {
         webResourcesRouter = new ArrayList<>();
         httpSecurityRouter = new ArrayList<>();
         addHttpSecurityRouter("/rooms");
+        addHttpSecurityRouter("/getRoomInfo/**");
         addHttpSecurityRouter(SecurityCommonUrl.DEFAULT_INDEX_PATH.getUrl());
         addHttpSecurityRouter(SecurityCommonUrl.DEFAULT_TEST_PATH.getUrl());
         addWebResourcesRouter(SecurityCommonUrl.DEFAULT_STATIC_PATH.getUrl());
