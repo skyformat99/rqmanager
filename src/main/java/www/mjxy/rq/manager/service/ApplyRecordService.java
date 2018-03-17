@@ -27,12 +27,11 @@ public class ApplyRecordService {
         JSONArray data = new JSONArray();
         List<ApplyRecord> applyRecordList = applyRecordRepository.findAllByRoom(room);
         for (ApplyRecord applyRecord : applyRecordList) {
-
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("applyState", applyRecord.getApply().getStateArray());
             jsonObject.put("reason", applyRecord.getReason());
             jsonObject.put("date", applyRecord.getApplyDate());
             jsonObject.put("state", applyRecord.getState());
-
 
             AppUser appUser = applyRecord.getAppUser();
             JSONObject userJson = new JSONObject();

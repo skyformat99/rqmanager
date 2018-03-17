@@ -77,6 +77,7 @@ public class StudentController {
                                 ApplyRecord applyRecord = new ApplyRecord();
                                 applyRecord.setAppUser(appUser);
                                 applyRecord.setRoom(room);
+                                applyRecord.setApply(apply);
                                 applyRecord.setState(1);
                                 applyRecord.setApplyDate(simpleDateFormat.parse(applyDateString));
                                 applyRecord.setReason(reason);
@@ -103,6 +104,7 @@ public class StudentController {
                     applyRecord.setAppUser(appUser);
                     applyRecord.setRoom(room);
                     applyRecord.setState(1);
+                    applyRecord.setApply(newApply);
                     applyRecord.setApplyDate(simpleDateFormat.parse(applyDateString));
                     applyRecord.setReason(reason);
                     applyRecordService.save(applyRecord);
