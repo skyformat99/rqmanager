@@ -3,12 +3,14 @@ package www.mjxy.rq.manager.controller;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import www.mjxy.rq.manager.model.AppUser;
 import www.mjxy.rq.manager.model.Apply;
 import www.mjxy.rq.manager.model.ApplyRecord;
 import www.mjxy.rq.manager.model.Room;
-import www.mjxy.rq.manager.service.AppUserService;
 import www.mjxy.rq.manager.service.ApplyRecordService;
 import www.mjxy.rq.manager.service.ApplyService;
 import www.mjxy.rq.manager.service.RoomService;
@@ -20,12 +22,10 @@ import java.text.SimpleDateFormat;
  * Created by wwhai on 2018/2/23.
  */
 @RestController
-@RequestMapping(value = "/student")
+@RequestMapping(value = "/user")
 public class StudentController {
     @Autowired
     ApplyService applyService;
-    @Autowired
-    AppUserService appUserService;
 
     @Autowired
     ApplyRecordService applyRecordService;
@@ -134,15 +134,9 @@ public class StudentController {
      * 查看我的申请记录
      */
 
-    @RequestMapping(value = "/applies/{pageNumber}/{size}")
-    public JSONObject applies(@PathVariable Integer pageNumber, @PathVariable Integer size) {
+    @RequestMapping(value = "/applies")
+    public JSONObject applies() {
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (pageNumber == null || size == null || (pageNumber == null && size == null)) {
-            pageNumber = 0;
-            size = 20;
-        }
-
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("state", 1);
         jsonObject.put("data", applyRecordService.getRecordByAppUser(appUser));

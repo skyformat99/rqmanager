@@ -13,26 +13,27 @@ import www.mjxy.rq.manager.model.Room;
 import www.mjxy.rq.manager.model.UserRole;
 import www.mjxy.rq.manager.service.*;
 import www.mjxy.rq.manager.utils.MD5Generator;
+import www.mjxy.rq.manager.utils.ReturnResult;
 
 /**
  * Created by wwhai on 2018/2/23.
  */
 @RestController
 @PreAuthorize(value = "hasRole('ROLE_ADMIN') AND hasRole('ROLE_USER')")
-@RequestMapping(value = "/teacher")
-public class TeacherController {
+@RequestMapping(value = "/admin")
+public class AdminController {
     @Autowired
     ApplyService applyService;
     @Autowired
     RoomService roomService;
 
     @Autowired
+    ApplyRecordService applyRecordService;
+    @Autowired
     AppUserService appUserService;
     @Autowired
     UserRoleService userRoleService;
 
-    @Autowired
-    DepartmentService departmentService;
 
     /**
      * 增加一间教室
@@ -67,15 +68,12 @@ public class TeacherController {
         }
     }
 
-    @RequestMapping(value = "/applies", method = RequestMethod.POST)
-    public JSONObject applies(@RequestBody JSONObject pageJsonBody) {
-        Integer pageNumber = pageJsonBody.getIntValue("pageNumber");
-        Integer size = pageJsonBody.getIntValue("size");
+    @RequestMapping(value = "/applies")
+    public JSONObject applies() {
 
-        JSONObject data = applyService.getAllApplies(pageNumber, size);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("state", 1);
-        jsonObject.put("data", data);
+        jsonObject.put("data", applyRecordService.getAllApplyRecord());
         jsonObject.put("message", "查询成功!");
         return jsonObject;
 
@@ -90,8 +88,13 @@ public class TeacherController {
      */
     @RequestMapping(value = "/processApply", method = RequestMethod.POST)
     public JSONObject processApply(@RequestBody JSONObject body) {
-        return applyService.processApply(body);
+        Long applyRecordId = body.getLongValue("applyRecordId");
+        String processSign = body.getString("processSign");
+        if (applyRecordId == null || processSign == null) {
+            return ReturnResult.returnResult(0, "参数不完整!");
+        }
 
+        return applyRecordService.processApply(applyRecordId, processSign);
     }
 
     /**
@@ -107,7 +110,9 @@ public class TeacherController {
         Long roomId = body.getLongValue("roomId");
         Room room = roomService.getByRoomId(roomId);
         if (room != null) {
-
+            roomService.deleteRoom(room);
+            jsonObject.put("state", 0);
+            jsonObject.put("message", "教室删除成功!");
 
         } else {
             jsonObject.put("state", 0);
@@ -170,10 +175,7 @@ public class TeacherController {
         /**
          * Map 提取参数的时候可能会抛出异常，所以进行异常捕获
          */
-
-
         String username = loginParamMap.getString("username");
-        //String password = loginParamMap.getString("password");
         String email = loginParamMap.getString("email");
         String phone = loginParamMap.getString("phone");
         String schoolCode = loginParamMap.getString("schoolCode");

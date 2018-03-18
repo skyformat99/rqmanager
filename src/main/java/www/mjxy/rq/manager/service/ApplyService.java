@@ -7,9 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import www.mjxy.rq.manager.dao.ApplyRecordRepository;
 import www.mjxy.rq.manager.dao.ApplyRepository;
-import www.mjxy.rq.manager.model.AppUser;
 import www.mjxy.rq.manager.model.Apply;
+import www.mjxy.rq.manager.model.ApplyRecord;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,10 @@ import java.util.List;
 @Service
 public class ApplyService {
     @Autowired
+    ApplyRecordService applyRecordService;
+    @Autowired
+    ApplyRecordRepository applyRecordRepository;
+    @Autowired
     ApplyRepository applyRepository;
     @Autowired
     RoomService roomService;
@@ -27,7 +32,6 @@ public class ApplyService {
     public Apply createApply(Apply apply) {
         return applyRepository.save(apply);
     }
-
 
 
     public JSONObject getAllApplies(Integer pageNumber, Integer size) {
@@ -58,30 +62,6 @@ public class ApplyService {
         return jsonArray;
     }
 
-    /**
-     * 处理请求
-     * 通过
-     * 拒绝
-     */
-    public JSONObject processApply(JSONObject body) {
-        Long applyId = body.getLongValue("applyId");
-        String processSign = body.getString("processSign");
-        JSONObject dataObject = new JSONObject();
-        Apply apply = applyRepository.findOne(applyId);
-        switch (processSign) {
-            case "ACCESS":
-
-                break;
-            case "DENY":
-
-                break;
-            default:
-                dataObject.put("state", 0);
-                dataObject.put("message", "操作标记只有ACCESS和DENY两种!");
-                break;
-        }
-        return dataObject;
-    }
 
 
 
