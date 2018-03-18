@@ -79,6 +79,7 @@ public class StudentController {
                                 applyRecord.setRoom(room);
                                 applyRecord.setApply(apply);
                                 applyRecord.setState(1);
+                                applyRecord.setApplyState(applyType);
                                 applyRecord.setApplyDate(simpleDateFormat.parse(applyDateString));
                                 applyRecord.setReason(reason);
                                 applyRecordService.save(applyRecord);
@@ -107,6 +108,7 @@ public class StudentController {
                     applyRecord.setApply(newApply);
                     applyRecord.setApplyDate(simpleDateFormat.parse(applyDateString));
                     applyRecord.setReason(reason);
+                    applyRecord.setApplyState(applyType);
                     applyRecordService.save(applyRecord);
                     returnJson.put("state", 1);
                     returnJson.put("message", "申请成功，请等待!");

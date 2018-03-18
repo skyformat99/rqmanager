@@ -14,5 +14,7 @@ public interface ApplyRecordRepository extends JpaRepository<ApplyRecord, Long> 
 
     List<ApplyRecord> findAllByRoom(Room room);
 
+    ApplyRecord  findTopByRoom(Room room);
+
     List<ApplyRecord> findAllByAppUser(AppUser appUser);
 }

@@ -19,13 +19,7 @@ import java.util.Date;
  */
 @Entity
 public class Apply extends BaseEntity implements Serializable {
-    //    @ManyToOne(targetEntity = AppUser.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private AppUser appUser;
-//    @ManyToOne(targetEntity = Room.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private Room room;
-//    private String reason;
     private Date applyDate;
-
     private String stateArray;
 
     public String getStateArray() {

@@ -23,12 +23,14 @@ public class ApplyRecordService {
         applyRecordRepository.save(applyRecord);
     }
 
-    public JSONArray getRecordByRoom(Room room) {
+    public JSONObject getRecordByRoom(Room room) {
+        JSONObject returnJson = new JSONObject();
+        ApplyRecord record = applyRecordRepository.findTopByRoom(room);
         JSONArray data = new JSONArray();
         List<ApplyRecord> applyRecordList = applyRecordRepository.findAllByRoom(room);
         for (ApplyRecord applyRecord : applyRecordList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("applyState", applyRecord.getApply().getStateArray());
+            jsonObject.put("applyState", applyRecord.getApplyState());
             jsonObject.put("reason", applyRecord.getReason());
             jsonObject.put("date", applyRecord.getApplyDate());
             jsonObject.put("state", applyRecord.getState());
@@ -43,7 +45,9 @@ public class ApplyRecordService {
             jsonObject.put("userInfo", userJson);
             data.add(jsonObject);
         }
-        return data;
+        returnJson.put("roomState", record.getApply().getStateArray());
+        returnJson.put("data", data);
+        return returnJson;
     }
 
     public JSONArray getRecordByAppUser(AppUser appUser) {
@@ -51,9 +55,12 @@ public class ApplyRecordService {
         List<ApplyRecord> applyRecordList = applyRecordRepository.findAllByAppUser(appUser);
         for (ApplyRecord applyRecord : applyRecordList) {
             JSONObject dataJson = new JSONObject();
-            dataJson.put("pa", applyRecord.getApplyDate());
-            dataJson.put("aa", applyRecord.getReason());
-            dataJson.put("acc", applyRecord.getAppUser().getTrueName());
+            dataJson.put("date", applyRecord.getApplyDate());
+            dataJson.put("reason", applyRecord.getReason());
+            dataJson.put("state", applyRecord.getState());
+            dataJson.put("trueName", applyRecord.getAppUser().getTrueName());
+            dataJson.put("department", applyRecord.getAppUser().getDepartment());
+            dataJson.put("schoolCode", applyRecord.getAppUser().getSchoolCode());
             data.add(dataJson);
 
         }

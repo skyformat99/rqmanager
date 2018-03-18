@@ -39,13 +39,6 @@ public class AppUser extends BaseEntity implements UserDetails, Serializable {
 
 
     @JSONField(serialize = false)
-    @JsonIgnore
-    @OneToMany(targetEntity = ApplyRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ApplyRecord> applyList;
-
-
-    @JSONField(serialize = false)
-    @JsonIgnore
     @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserRole> roleList;
 
@@ -108,13 +101,6 @@ public class AppUser extends BaseEntity implements UserDetails, Serializable {
         return simpleGrantedAuthorities;
     }
 
-    public List<ApplyRecord> getApplyList() {
-        return applyList;
-    }
-
-    public void setApplyList(List<ApplyRecord> applyList) {
-        this.applyList = applyList;
-    }
 
     public void setRoleList(List<UserRole> roleList) {
         this.roleList = roleList;

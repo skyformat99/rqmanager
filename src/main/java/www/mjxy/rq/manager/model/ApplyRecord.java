@@ -19,6 +19,16 @@ public class ApplyRecord extends BaseEntity {
     private String reason;
     private Date applyDate;
 
+    private String applyState;
+
+    public String getApplyState() {
+        return applyState;
+    }
+
+    public void setApplyState(String applyState) {
+        this.applyState = applyState;
+    }
+
     @ManyToOne(targetEntity = Apply.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Apply apply;
 

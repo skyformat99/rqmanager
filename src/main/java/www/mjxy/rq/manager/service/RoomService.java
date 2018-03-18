@@ -79,7 +79,7 @@ public class RoomService {
      * @param roomId
      * @return
      */
-    public JSONArray getRoomInfo(Long roomId) {
+    public JSONObject getRoomInfo(Long roomId) {
         Room room = roomRepository.findOne(roomId);
         if (room != null) {
             return applyRecordService.getRecordByRoom(room);
