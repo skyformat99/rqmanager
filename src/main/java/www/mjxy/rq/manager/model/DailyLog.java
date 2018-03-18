@@ -20,6 +20,9 @@ public class DailyLog extends BaseEntity {
         this.doWhat = doWhat;
         this.happend = happend;
     }
+    public DailyLog(){
+
+    }
 
     public String getWho() {
         return who;

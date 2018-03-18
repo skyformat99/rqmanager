@@ -52,11 +52,11 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
             returnJson.put("state", 0);
             returnJson.put("message", "登录失败");
         }
-        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        dailyLogService.save(new DailyLog("用户[" + appUser.getUsername(),
-                "][登录][",
-
-                "[失败]"));
+//        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        dailyLogService.save(new DailyLog("用户[" + appUser.getUsername(),
+//                "][登录][",
+//
+//                "[失败]"));
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("UTF-8");
         httpServletResponse.getWriter().write(returnJson.toJSONString());

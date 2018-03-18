@@ -262,7 +262,7 @@ public class AdminController {
      * @return
      */
 
-    @RequestMapping(value = "/getAllLog", method = RequestMethod.POST)
+    @RequestMapping(value = "/getAllLog")
     public JSONObject getAllLog() {
         return ReturnResult.returnResultWithData(1, "获取成功!", dailyLogService.getAll());
     }

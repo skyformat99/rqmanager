@@ -45,7 +45,6 @@ public class UserController {
         Long roomId = applyJsonBody.getLong("roomId");
         String applyType = applyJsonBody.getString("applyType");
         String applyDateString = applyJsonBody.getString("applyDateString");
-        System.out.println(applyType);
 
         //排除null
         if ((reason == null || roomId == null || applyType == null || applyDateString == null)) {
@@ -81,8 +80,7 @@ public class UserController {
                                 applyRecord.setReason(reason);
                                 applyRecordService.save(applyRecord);
 
-                                DailyLog dailyLog = new DailyLog("[" + appUser.getUsername(), "][申请][" + applyRecord.getRoom().getRoomName() + "]", "[成功]");
-
+                                DailyLog dailyLog = new DailyLog("[" + appUser.getUsername()+"]", "[申请]" +"["+ applyRecord.getRoom().getRoomName() + "]", "[成功]");
                                 dailyLogService.save(dailyLog);
 
                                 returnJson.put("state", 1);
@@ -116,7 +114,7 @@ public class UserController {
                 }
 
             } catch (Exception e) {
-                //e.printStackTrace();
+                e.printStackTrace();
                 returnJson.put("state", 0);
                 returnJson.put("message", "日期解析错误!");
             }

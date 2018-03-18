@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by wwhai on 2018/3/18.
  */
-@Service
+@Service(value = "DailyLogService")
 public class DailyLogService {
     @Autowired
     DailyLogRepository dailyLogRepository;
