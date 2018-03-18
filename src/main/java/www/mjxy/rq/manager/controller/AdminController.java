@@ -3,12 +3,14 @@ package www.mjxy.rq.manager.controller;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import www.mjxy.rq.manager.constants.FailureMessageEnum;
 import www.mjxy.rq.manager.model.AppUser;
+import www.mjxy.rq.manager.model.DailyLog;
 import www.mjxy.rq.manager.model.Room;
 import www.mjxy.rq.manager.model.UserRole;
 import www.mjxy.rq.manager.service.*;
@@ -22,6 +24,8 @@ import www.mjxy.rq.manager.utils.ReturnResult;
 @PreAuthorize(value = "hasRole('ROLE_ADMIN') AND hasRole('ROLE_USER')")
 @RequestMapping(value = "/admin")
 public class AdminController {
+    @Autowired
+    DailyLogService dailyLogService;
     @Autowired
     ApplyService applyService;
     @Autowired
@@ -43,6 +47,8 @@ public class AdminController {
 
     @RequestMapping(value = "/postRoom")
     public JSONObject postRoom(@RequestBody JSONObject roomJsonBody) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         String roomName = roomJsonBody.getString("roomName");
         String roomNumber = roomJsonBody.getString("roomNumber");
         String roomInfo = roomJsonBody.getString("roomInfo");
@@ -63,6 +69,11 @@ public class AdminController {
             jsonObject.put("state", 1);
             jsonObject.put("message", "添加成功!");
 
+
+            dailyLogService.save(new DailyLog("管理员[" + appUser.getUsername(),
+                    "][增加教室][" +
+                            room.getRoomName() + "]",
+                    "[成功]"));
             return jsonObject;
 
         }
@@ -106,6 +117,8 @@ public class AdminController {
 
     @RequestMapping(value = "/deleteRoom", method = RequestMethod.POST)
     public JSONObject deleteRoom(@RequestBody JSONObject body) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         JSONObject jsonObject = new JSONObject();
         Long roomId = body.getLongValue("roomId");
         Room room = roomService.getByRoomId(roomId);
@@ -113,6 +126,10 @@ public class AdminController {
             roomService.deleteRoom(room);
             jsonObject.put("state", 0);
             jsonObject.put("message", "教室删除成功!");
+            dailyLogService.save(new DailyLog("管理员[" + appUser.getUsername(),
+                    "][删除教室][" +
+                            room.getRoomName() + "]",
+                    "[成功]"));
 
         } else {
             jsonObject.put("state", 0);
@@ -133,6 +150,8 @@ public class AdminController {
     @RequestMapping(value = "/updateRoom", method = RequestMethod.POST)
     public JSONObject updateRoom(@RequestBody JSONObject roomJsonBody) {
         JSONObject jsonObject = new JSONObject();
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         Long roomId = roomJsonBody.getLongValue("roomId");
         String roomName = roomJsonBody.getString("roomName");
         String roomNumber = roomJsonBody.getString("roomNumber");
@@ -152,6 +171,11 @@ public class AdminController {
                 roomService.save(room);
                 jsonObject.put("state", 1);
                 jsonObject.put("message", "更新成功!");
+                dailyLogService.save(new DailyLog("管理员[" + appUser.getUsername(),
+                        "][更新教室][" +
+                                room.getRoomName() + "]",
+                        "[成功]"));
+
                 return jsonObject;
             } else {
                 jsonObject.put("state", 0);
@@ -171,6 +195,8 @@ public class AdminController {
      */
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
     public JSONObject addUser(@RequestBody JSONObject loginParamMap) {
+        AppUser admin = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         JSONObject resultJson = new JSONObject();
         /**
          * Map 提取参数的时候可能会抛出异常，所以进行异常捕获
@@ -220,10 +246,26 @@ public class AdminController {
                 userRoleService.createUserRole(userRole);
                 resultJson.put("state", 1);
                 resultJson.put("message", "添加用户成功!");
+                dailyLogService.save(new DailyLog("管理员[" + admin.getUsername(),
+                        "][添加用户教室][" +
+                                appUser.getTrueName() + "]",
+                        "[成功]"));
             }
 
         }
         return resultJson;
     }
+
+    /**
+     * 获取log日志
+     *
+     * @return
+     */
+
+    @RequestMapping(value = "/getAllLog", method = RequestMethod.POST)
+    public JSONObject getAllLog() {
+        return ReturnResult.returnResultWithData(1, "获取成功!", dailyLogService.getAll());
+    }
+
 
 }

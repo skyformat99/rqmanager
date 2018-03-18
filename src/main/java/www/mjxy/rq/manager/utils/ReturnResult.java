@@ -1,5 +1,6 @@
 package www.mjxy.rq.manager.utils;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -49,7 +50,7 @@ public class ReturnResult {
         return jsonObject;
     }
 
-    public static JSONObject returnResultWithData(Integer state, String message, Object data) {
+    public static JSONObject returnResultWithData(Integer state, String message, JSONArray data) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("state", state);
         jsonObject.put("data", data);

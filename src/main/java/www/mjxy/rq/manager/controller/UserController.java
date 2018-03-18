@@ -3,16 +3,11 @@ package www.mjxy.rq.manager.controller;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import www.mjxy.rq.manager.model.AppUser;
-import www.mjxy.rq.manager.model.Apply;
-import www.mjxy.rq.manager.model.ApplyRecord;
-import www.mjxy.rq.manager.model.Room;
+import org.springframework.web.bind.annotation.*;
+import www.mjxy.rq.manager.model.*;
 import www.mjxy.rq.manager.service.ApplyRecordService;
 import www.mjxy.rq.manager.service.ApplyService;
+import www.mjxy.rq.manager.service.DailyLogService;
 import www.mjxy.rq.manager.service.RoomService;
 import www.mjxy.rq.manager.utils.ReturnResult;
 
@@ -23,9 +18,11 @@ import java.text.SimpleDateFormat;
  */
 @RestController
 @RequestMapping(value = "/user")
-public class StudentController {
+public class UserController {
     @Autowired
     ApplyService applyService;
+    @Autowired
+    DailyLogService dailyLogService;
 
     @Autowired
     ApplyRecordService applyRecordService;
@@ -84,10 +81,12 @@ public class StudentController {
                                 applyRecord.setReason(reason);
                                 applyRecordService.save(applyRecord);
 
+                                DailyLog dailyLog = new DailyLog("[" + appUser.getUsername(), "][申请][" + applyRecord.getRoom().getRoomName() + "]", "[成功]");
+
+                                dailyLogService.save(dailyLog);
 
                                 returnJson.put("state", 1);
                                 returnJson.put("message", "申请成功，请等待!");
-                                System.out.println("日志在这里输出");
                             } else {
                                 returnJson.put("state", 1);
                                 returnJson.put("message", "目前被占用暂时不能申请!");
@@ -110,13 +109,14 @@ public class StudentController {
                     applyRecord.setReason(reason);
                     applyRecord.setApplyState(applyType);
                     applyRecordService.save(applyRecord);
+                    DailyLog dailyLog = new DailyLog("[" + appUser.getUsername(), "][申请][" + applyRecord.getRoom().getRoomName() + "]", "[成功]");
+                    dailyLogService.save(dailyLog);
                     returnJson.put("state", 1);
                     returnJson.put("message", "申请成功，请等待!");
-                    System.out.println("日志在这里输出");
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 returnJson.put("state", 0);
                 returnJson.put("message", "日期解析错误!");
             }
@@ -132,6 +132,8 @@ public class StudentController {
 
     /**
      * 查看我的申请记录
+     *
+     * @return
      */
 
     @RequestMapping(value = "/applies")
@@ -149,17 +151,52 @@ public class StudentController {
     /**
      * 取消一次申请
      *
-     * @param jsonBody
+     * @param
      * @return
      */
 
-    @RequestMapping(value = "/cancelApply", method = RequestMethod.POST)
-    public JSONObject cancelApply(@RequestBody JSONObject jsonBody) {
-        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @RequestMapping(value = "/cancelApply/{applyRecordId}")
+    public JSONObject cancelApply(@PathVariable Long applyRecordId) {
+        AppUser appUser= (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JSONObject jsonObject = new JSONObject();
+        //撤回:將请求删除
+        //同时恢复申请状态
+        ApplyRecord applyRecord = applyRecordService.getAApplyRecord(applyRecordId);
 
+        if (applyRecord != null) {
+            Apply apply = applyRecord.getApply();
+            if (applyRecord.getState() == 2) {
+                jsonObject.put("state", 0);
+                jsonObject.put("message", "已经审核通过，无法取消!");
+                return jsonObject;
+            }
 
-        return jsonObject;
+            char stateArray[] = applyRecord.getApplyState().toCharArray();
+            for (int i = 0; i < stateArray.length; i++) {
+                if (stateArray[i] == '1') {
+                    stateArray[i] = '0';
+                    StringBuffer stringBuffer = new StringBuffer();
+                    for (int j = 0; j < stateArray.length; j++) {
+                        stringBuffer.append(stateArray[j]);
+                    }
+                    apply.setStateArray(stringBuffer.toString());
+                    applyService.createApply(apply);
+                }
+            }
+            applyRecordService.delete(applyRecord);
+            jsonObject.put("state", 1);
+            jsonObject.put("message", "取消成功!");
+            DailyLog dailyLog = new DailyLog("[" + appUser.getUsername(),
+                    "][取消申请][" +
+                            applyRecord.getRoom().getRoomName() + "]",
+                    "[成功]");
+            dailyLogService.save(dailyLog);
+            return jsonObject;
+        } else {
+            jsonObject.put("state", 0);
+            jsonObject.put("message", "申请不存在!");
+            return jsonObject;
+        }
     }
 
 

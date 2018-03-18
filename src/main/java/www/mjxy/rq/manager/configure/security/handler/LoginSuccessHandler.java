@@ -1,11 +1,14 @@
 package www.mjxy.rq.manager.configure.security.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import www.mjxy.rq.manager.constants.SuccessMessageEnum;
 import www.mjxy.rq.manager.model.AppUser;
+import www.mjxy.rq.manager.model.DailyLog;
+import www.mjxy.rq.manager.service.DailyLogService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,13 +20,16 @@ import java.io.IOException;
  * 登录成功处理器
  */
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-
+    @Autowired
+    DailyLogService dailyLogService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         JSONObject returnJson = new JSONObject();
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        dailyLogService.save(new DailyLog("用户[" ,
+                "][登录][",
+                "[成功]"));
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("avatar", appUser.getAvatar());
         jsonObject.put("email", appUser.getEmail());

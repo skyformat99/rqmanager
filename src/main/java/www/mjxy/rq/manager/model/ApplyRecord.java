@@ -12,9 +12,9 @@ import java.util.Date;
  */
 @Entity
 public class ApplyRecord extends BaseEntity {
-    @ManyToOne(targetEntity = AppUser.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = AppUser.class, fetch = FetchType.LAZY)
     private AppUser appUser;
-    @ManyToOne(targetEntity = Room.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Room.class, fetch = FetchType.LAZY)
     private Room room;
     private String reason;
     private Date applyDate;
@@ -29,7 +29,7 @@ public class ApplyRecord extends BaseEntity {
         this.applyState = applyState;
     }
 
-    @ManyToOne(targetEntity = Apply.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Apply.class, fetch = FetchType.LAZY)
     private Apply apply;
 
     public Apply getApply() {

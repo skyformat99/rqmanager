@@ -1,14 +1,19 @@
 package www.mjxy.rq.manager.configure.security.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import www.mjxy.rq.manager.constants.FailureMessageEnum;
+import www.mjxy.rq.manager.model.AppUser;
+import www.mjxy.rq.manager.model.DailyLog;
+import www.mjxy.rq.manager.service.DailyLogService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +25,9 @@ import java.io.IOException;
  * 登录失败处理器
  */
 public class LoginFailureHandler implements AuthenticationFailureHandler {
+    @Autowired
+    DailyLogService dailyLogService;
+
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         JSONObject returnJson = new JSONObject();
@@ -44,7 +52,11 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
             returnJson.put("state", 0);
             returnJson.put("message", "登录失败");
         }
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        dailyLogService.save(new DailyLog("用户[" + appUser.getUsername(),
+                "][登录][",
 
+                "[失败]"));
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("UTF-8");
         httpServletResponse.getWriter().write(returnJson.toJSONString());

@@ -26,8 +26,7 @@ public class IndexController {
 
     @RequestMapping(value = {"/getRoomInfo/{roomId}"})
     public JSONObject getRoomInfo(@PathVariable("roomId") Long roomId) {
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("data", roomService.getRoomInfo(roomId));
+
         return roomService.getRoomInfo(roomId);
     }
 }
