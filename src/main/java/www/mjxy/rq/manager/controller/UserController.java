@@ -5,10 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import www.mjxy.rq.manager.model.*;
-import www.mjxy.rq.manager.service.ApplyRecordService;
-import www.mjxy.rq.manager.service.ApplyService;
-import www.mjxy.rq.manager.service.DailyLogService;
-import www.mjxy.rq.manager.service.RoomService;
+import www.mjxy.rq.manager.service.*;
+import www.mjxy.rq.manager.utils.MD5Generator;
 import www.mjxy.rq.manager.utils.ReturnResult;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +17,8 @@ import java.text.SimpleDateFormat;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
+    @Autowired
+    AppUserService appUserService;
     @Autowired
     ApplyService applyService;
     @Autowired
@@ -62,35 +62,32 @@ public class UserController {
                 if (apply != null) {
                     char stateArray[] = apply.getStateArray().toCharArray();
                     char applyTypeArray[] = applyType.toCharArray();
-
                     for (int i = 0; i < applyType.toCharArray().length; i++) {
                         if (applyTypeArray[i] == '1')/*1表示这个位需要申请*/ {
                             if (stateArray[i] == '0') {//0表示空闲
                                 stateArray[i] = '1';//表示提交后待定
                                 apply.setStateArray(new String(stateArray));
                                 applyService.createApply(apply);
-
-                                ApplyRecord applyRecord = new ApplyRecord();
-                                applyRecord.setAppUser(appUser);
-                                applyRecord.setRoom(room);
-                                applyRecord.setApply(apply);
-                                applyRecord.setState(1);
-                                applyRecord.setApplyState(applyType);
-                                applyRecord.setApplyDate(simpleDateFormat.parse(applyDateString));
-                                applyRecord.setReason(reason);
-                                applyRecordService.save(applyRecord);
-
-                                DailyLog dailyLog = new DailyLog("[" + appUser.getUsername()+"]", "[申请]" +"["+ applyRecord.getRoom().getRoomName() + "]", "[成功]");
-                                dailyLogService.save(dailyLog);
-
-                                returnJson.put("state", 1);
-                                returnJson.put("message", "申请成功，请等待!");
                             } else {
                                 returnJson.put("state", 1);
                                 returnJson.put("message", "目前被占用暂时不能申请!");
+                                return returnJson;
                             }
                         }
                     }
+                    ApplyRecord applyRecord = new ApplyRecord();
+                    applyRecord.setAppUser(appUser);
+                    applyRecord.setRoom(room);
+                    applyRecord.setApply(apply);
+                    applyRecord.setState(1);
+                    applyRecord.setApplyState(applyType);
+                    applyRecord.setApplyDate(simpleDateFormat.parse(applyDateString));
+                    applyRecord.setReason(reason);
+                    applyRecordService.save(applyRecord);
+                    DailyLog dailyLog = new DailyLog("[" + appUser.getUsername() + "]", "[申请]" + "[" + applyRecord.getRoom().getRoomName() + "]", "[成功]");
+                    dailyLogService.save(dailyLog);
+                    returnJson.put("state", 1);
+                    returnJson.put("message", "申请成功，请等待!");
 
                 } else {
                     //么有被人申请就首创一个
@@ -107,8 +104,7 @@ public class UserController {
                     applyRecord.setReason(reason);
                     applyRecord.setApplyState(applyType);
                     applyRecordService.save(applyRecord);
-                    DailyLog dailyLog = new DailyLog("[" + appUser.getUsername(), "][申请][" + applyRecord.getRoom().getRoomName() + "]", "[成功]");
-                    dailyLogService.save(dailyLog);
+                    dailyLogService.save(new DailyLog("[" + appUser.getUsername(), "][申请][" + applyRecord.getRoom().getRoomName() + "]", "[成功]"));
                     returnJson.put("state", 1);
                     returnJson.put("message", "申请成功，请等待!");
                 }
@@ -155,7 +151,7 @@ public class UserController {
 
     @RequestMapping(value = "/cancelApply/{applyRecordId}")
     public JSONObject cancelApply(@PathVariable Long applyRecordId) {
-        AppUser appUser= (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JSONObject jsonObject = new JSONObject();
         //撤回:將请求删除
         //同时恢复申请状态
@@ -197,5 +193,28 @@ public class UserController {
         }
     }
 
+    /**
+     * 改密码
+     * @param body
+     * @return
+     */
+    @RequestMapping(value = "/changePassword")
+    public JSONObject changePassword(@RequestBody JSONObject body) {
+        String newPassword = body.getString("newPassword");
+        String newPasswordRetry = body.getString("newPasswordRetry");
 
+        if (newPassword == null || newPasswordRetry == null) {
+            return ReturnResult.returnResult(0, "参数不全");
+        } else if (!newPassword.matches("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$")) {
+            return ReturnResult.returnResult(0, "密码必须是6-16位字母数字组合!");
+        } else if (!newPassword.equals(newPasswordRetry)) {
+            return ReturnResult.returnResult(0, " 两次密码不一样!");
+        } else {
+            AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            appUser.setPassword(MD5Generator.EncodingMD5(newPassword));
+            appUserService.createUser(appUser);
+            return ReturnResult.returnResult(0, " 密码重置成功!");
+
+        }
+    }
 }

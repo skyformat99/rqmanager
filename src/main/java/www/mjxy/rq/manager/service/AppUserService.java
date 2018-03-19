@@ -1,5 +1,7 @@
 package www.mjxy.rq.manager.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import www.mjxy.rq.manager.dao.AppUserRepository;
@@ -17,7 +19,8 @@ public class AppUserService {
     AppUserRepository appUserRepository;
     @Autowired
     UserRoleService userRoleService;
-
+    @Autowired
+    ApplyRecordService applyRecordService;
 
 
     public AppUser getUserByParameter(String username, String schoolCode) {
@@ -52,5 +55,36 @@ public class AppUserService {
         return appUserRepository.save(appUser);
     }
 
+    public JSONArray getAllUserApplyData() {
+        JSONArray data = new JSONArray();
+        for (AppUser appUser : appUserRepository.findAll()) {
+            JSONObject userJson = new JSONObject();
+            userJson.put("username", appUser.getUsername());
+            userJson.put("trueName", appUser.getTrueName());
+            userJson.put("schoolCode", appUser.getSchoolCode());
+            userJson.put("department", appUser.getDepartment());
+            userJson.put("phone", appUser.getPhone());
+            userJson.put("email", appUser.getEmail());
+            JSONArray applyRecordList = applyRecordService.getRecordByAppUser(appUser);
+            int successCount = 0;
+            int failureCount = 0;
+            for (Object o : applyRecordList) {
+                System.out.printf("State:" + ((JSONObject) o).getIntValue("state"));
+                if (((JSONObject) o).getString("state") == "2") {
+                    successCount += 1;
+                } else if (((JSONObject) o).getString("state") .equals("0")  || ((JSONObject) o).getString("state") .equals("1")) {
+                    failureCount += 1;
+                }
+
+            }
+            userJson.put("totalCount", applyRecordService.getRecordByAppUser(appUser).size());
+            userJson.put("failureCount", failureCount);
+            userJson.put("successCount", successCount);
+            data.add(userJson);
+        }
+
+        return data;
+
+    }
 
 }

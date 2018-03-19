@@ -181,4 +181,13 @@ public class ApplyRecordService {
     public void delete(ApplyRecord applyRecord) {
         applyRecordRepository.delete(applyRecord);
     }
+
+
+//    public JSONArray getApplyRank() {
+//        List<ApplyRecord> applyRecordList = applyRecordRepository.findAll();
+//
+//
+//
+//    }
+
 }

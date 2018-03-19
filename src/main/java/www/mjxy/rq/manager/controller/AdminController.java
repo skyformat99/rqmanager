@@ -267,5 +267,41 @@ public class AdminController {
         return ReturnResult.returnResultWithData(1, "获取成功!", dailyLogService.getAll());
     }
 
+    /**
+     * 获取所有的用户
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getAllUser")
+    public JSONObject getAllUser() {
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("state", 1);
+        resultJson.put("data", appUserService.getAllUserApplyData());
+        resultJson.put("message", "查询成功!");
+        return resultJson;
+
+    }
+
+    /**
+     * 申请次数排行榜
+     *
+     * @return
+     */
+//    @RequestMapping(value = "/applyRank")
+//
+//    public JSONObject applyRank() {
+//        applyRecordService.
+//
+//
+//    }
+////
+//    /**
+//     * 个人申请记录
+//     *
+//     * @return
+//     */
+//    public JSONObject personalApplyData() {
+//
+//    }
 
 }

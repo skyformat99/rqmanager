@@ -37,6 +37,8 @@ public class AppUser extends BaseEntity implements UserDetails, Serializable {
     private boolean isCredentialsNonExpired = true;
     private boolean isEnabled = true;
 
+    @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY)
+    private List<ApplyRecord>applyRecords;
 
     @JSONField(serialize = false)
     @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -52,6 +54,14 @@ public class AppUser extends BaseEntity implements UserDetails, Serializable {
 
     public String getTrueName() {
         return trueName;
+    }
+
+    public List<ApplyRecord> getApplyRecords() {
+        return applyRecords;
+    }
+
+    public void setApplyRecords(List<ApplyRecord> applyRecords) {
+        this.applyRecords = applyRecords;
     }
 
     public void setTrueName(String trueName) {
