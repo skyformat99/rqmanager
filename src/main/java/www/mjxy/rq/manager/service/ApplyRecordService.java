@@ -5,11 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import www.mjxy.rq.manager.dao.AppUserRepository;
 import www.mjxy.rq.manager.dao.ApplyRecordRepository;
 import www.mjxy.rq.manager.dao.ApplyRepository;
 import www.mjxy.rq.manager.model.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by wwhai on 2018/3/17.
@@ -23,6 +24,9 @@ public class ApplyRecordService {
 
     @Autowired
     ApplyRepository applyRepository;
+
+    @Autowired
+    AppUserRepository appUserRepository;
 
     public void save(ApplyRecord applyRecord) {
         applyRecordRepository.save(applyRecord);
@@ -183,11 +187,26 @@ public class ApplyRecordService {
     }
 
 
-//    public JSONArray getApplyRank() {
-//        List<ApplyRecord> applyRecordList = applyRecordRepository.findAll();
-//
-//
-//
-//    }
+    public JSONArray getApplyRank() {
+        List<Long> rankList = new ArrayList<>();
+        List<ApplyRecord> applyRecordList = applyRecordRepository.findAll();
+        for (ApplyRecord applyRecord : applyRecordList) {
+            rankList.add(applyRecord.getAppUser().getId());
+        }
+        JSONArray data = new JSONArray();
+        Set<Long> rankSet = new HashSet<>(rankList);
+        for (Long id : rankSet) {
+            AppUser appUser = appUserRepository.findOne(id);
+            JSONObject userJson = new JSONObject();
+            userJson.put("count", Collections.frequency(rankList, id));
+            userJson.put("username", appUser.getUsername());
+            userJson.put("department", appUser.getDepartment());
+            userJson.put("schoolCode", appUser.getSchoolCode());
+            userJson.put("phone", appUser.getPhone());
+            data.add(userJson);
+        }
+        return data;
+
+    }
 
 }

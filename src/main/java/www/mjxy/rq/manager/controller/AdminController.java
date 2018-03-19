@@ -287,21 +287,17 @@ public class AdminController {
      *
      * @return
      */
-//    @RequestMapping(value = "/applyRank")
-//
-//    public JSONObject applyRank() {
-//        applyRecordService.
-//
-//
-//    }
-////
-//    /**
-//     * 个人申请记录
-//     *
-//     * @return
-//     */
-//    public JSONObject personalApplyData() {
-//
-//    }
+    @RequestMapping(value = "/applyRank")
+
+    public JSONObject applyRank() {
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("state", 1);
+        resultJson.put("data", applyRecordService.getApplyRank());
+        resultJson.put("message", "查询成功!");
+        return resultJson;
+
+
+    }
+
 
 }
