@@ -61,8 +61,7 @@ public class AppUserService {
             JSONObject userJson = new JSONObject();
             userJson.put("username", appUser.getUsername());
             userJson.put("trueName", appUser.getTrueName());
-            userJson.put("schoolCode", appUser.getSchoolCode());
-            userJson.put("department", appUser.getDepartment());
+             userJson.put("department", appUser.getDepartment());
             userJson.put("phone", appUser.getPhone());
             userJson.put("email", appUser.getEmail());
             JSONArray applyRecordList = applyRecordService.getRecordByAppUser(appUser);

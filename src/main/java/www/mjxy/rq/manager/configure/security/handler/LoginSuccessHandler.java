@@ -35,8 +35,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         jsonObject.put("avatar", appUser.getAvatar());
         jsonObject.put("email", appUser.getEmail());
         jsonObject.put("phone", appUser.getPhone());
-        jsonObject.put("schoolCode", appUser.getSchoolCode());
-        jsonObject.put("username", appUser.getUsername());
+         jsonObject.put("username", appUser.getUsername());
         jsonObject.put("department", appUser.getDepartment());
         jsonObject.put("trueName", appUser.getTrueName());
         returnJson.put("state", 1);

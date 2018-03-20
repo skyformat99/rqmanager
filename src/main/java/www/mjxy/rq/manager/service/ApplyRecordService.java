@@ -48,8 +48,7 @@ public class ApplyRecordService {
                 AppUser appUser = applyRecord.getAppUser();
                 JSONObject userJson = new JSONObject();
                 userJson.put("username", appUser.getUsername());
-                userJson.put("schoolCode", appUser.getSchoolCode());
-                userJson.put("department", appUser.getDepartment());
+                 userJson.put("department", appUser.getDepartment());
                 userJson.put("phone", appUser.getPhone());
 
                 jsonObject.put("userInfo", userJson);
@@ -74,8 +73,7 @@ public class ApplyRecordService {
             dataJson.put("applyState", applyRecord.getApplyState());
             dataJson.put("trueName", applyRecord.getAppUser().getTrueName());
             dataJson.put("department", applyRecord.getAppUser().getDepartment());
-            dataJson.put("schoolCode", applyRecord.getAppUser().getSchoolCode());
-            data.add(dataJson);
+             data.add(dataJson);
 
         }
         return data;
@@ -160,14 +158,14 @@ public class ApplyRecordService {
         List<ApplyRecord> applyRecordList = applyRecordRepository.findAll();
         for (ApplyRecord applyRecord : applyRecordList) {
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", applyRecord.getRoom().getId());
             jsonObject.put("applyState", applyRecord.getApplyState());
             jsonObject.put("date", applyRecord.getApplyDate());
             jsonObject.put("reason", applyRecord.getReason());
             jsonObject.put("state", applyRecord.getState());
             AppUser appUser = applyRecord.getAppUser();
             JSONObject userJson = new JSONObject();
-            userJson.put("schoolCode", appUser.getSchoolCode());
-            userJson.put("username", appUser.getUsername());
+             userJson.put("username", appUser.getUsername());
             userJson.put("department", appUser.getDepartment());
             userJson.put("phone", appUser.getPhone());
             jsonObject.put("userInfo", userJson);
@@ -201,8 +199,7 @@ public class ApplyRecordService {
             userJson.put("count", Collections.frequency(rankList, id));
             userJson.put("username", appUser.getUsername());
             userJson.put("department", appUser.getDepartment());
-            userJson.put("schoolCode", appUser.getSchoolCode());
-            userJson.put("phone", appUser.getPhone());
+             userJson.put("phone", appUser.getPhone());
             data.add(userJson);
         }
         return data;

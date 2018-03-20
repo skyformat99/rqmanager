@@ -49,6 +49,9 @@ public class UserController {
         //排除null
         if ((reason == null || roomId == null || applyType == null || applyDateString == null)) {
             return ReturnResult.returnResult(0, "参数不完整!");
+        } else if (applyType.split(",").length != 4) {
+            return ReturnResult.returnResult(0, "数组长度必须4位!");
+
         }
 
         Room room = roomService.getByRoomId(roomId);

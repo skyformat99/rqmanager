@@ -25,7 +25,7 @@ public class AppUser extends BaseEntity implements UserDetails, Serializable {
     private String username;
     @JsonIgnore
     private String password;
-    private String schoolCode;
+    //private String schoolCode;
     private String email;
     private String phone;
     private String trueName;//真实姓名
@@ -70,15 +70,6 @@ public class AppUser extends BaseEntity implements UserDetails, Serializable {
 
     public void setDepartment(String department) {
         this.department = department;
-    }
-
-
-    public String getSchoolCode() {
-        return schoolCode;
-    }
-
-    public void setSchoolCode(String schoolCode) {
-        this.schoolCode = schoolCode;
     }
 
     public String getAvatar() {
