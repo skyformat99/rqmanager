@@ -23,10 +23,10 @@ public class AppUserService {
     ApplyRecordService applyRecordService;
 
 
-    public AppUser getUserByParameter(String username, String schoolCode) {
+    public AppUser getUserByParameter(String username) {
         AppUser appUser;
         try {
-            appUser = appUserRepository.findTopByUsernameOrSchoolCode(username, schoolCode);
+            appUser = appUserRepository.findTopByUsername(username);
             List<UserRole> userRoleList = userRoleService.getByAppUser(appUser);
             if (userRoleList == null || userRoleList.size() < 1) {
                 appUser.setRoleList(null);

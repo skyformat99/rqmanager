@@ -235,7 +235,7 @@ public class AdminController {
                 appUser.setPassword(MD5Generator.EncodingMD5("66666666"));
                 appUser.setPhone(phone);
                 appUser.setEmail(email);
-                 appUser.setTrueName(trueName);
+                appUser.setTrueName(trueName);
                 appUser.setDepartment(department);
                 appUserService.createUser(appUser);
                 UserRole userRole = new UserRole();

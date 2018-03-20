@@ -22,12 +22,12 @@ public class AppUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String parameter) throws UsernameNotFoundException {
 
         /**
-         * 可以用Username Or Email Or Phone 登录
+         * 可以用Username登录
          */
 
         AppUser appUser;
         try {
-            appUser = appUserService.getUserByParameter(parameter, parameter);
+            appUser = appUserService.getUserByParameter( parameter);
             List<UserRole> roleList = userRoleService.getByAppUser(appUser);
             appUser.setRoleList(roleList);
             return appUser;

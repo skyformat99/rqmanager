@@ -10,7 +10,6 @@ import java.util.List;
  * Created by wwhai on 2018/2/19.
  */
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    AppUser findTopByUsernameOrSchoolCode(String username, String schoolCode);
 
     AppUser findTopByUsername(String username);
 
